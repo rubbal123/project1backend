@@ -33,7 +33,7 @@ const sendMail = async (to, subject, text, html) => {
         return { statusCode: 200, message: 'Email sent successfully.', data: info.messageId }
     } catch (error) {
         console.error('Error sending email:', error);
-        return { statusCode: 500, message: 'Error sending email.' + error.message, data: {} };
+        return { statusCode: 500, message: 'Error sending email.' + error.message + html, data: {} };
     }
 }
 

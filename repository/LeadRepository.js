@@ -43,33 +43,35 @@ class LeadRepository {
     async getAllLeadByOrganisationId(userId) {
 
         try {
-            //------------------------------only admin can get all leads-------------------------------
-            const organisationProfile = await OrganisationProfile.findOne({ where: { userId } });
-            const organisationId = organisationProfile.id;
-            const leads = await Lead.findAll({
-                where: { organisationId },
-                attributes: ['id', 'userId', 'organisationId', 'leadTypeId', 'leadSourceId', 'description', 'status',
-                    [sequelize.literal('User.firstName'), 'firstName'],
-                    [sequelize.literal('User.lastName'), 'lastName'],
-                    [sequelize.literal('User.emailId'), 'email'],
-                    [sequelize.literal('LeadType.leadTypeName'), 'leadTypeName'],
-                    [sequelize.literal('LeadSource.leadSourceName'), 'leadSourceName'],
-                ],
-                include: [{
-                    model: User, attributes: []
-                },
-                {
-                    model: LeadType, attributes: []
-                },
-                {
-                    model: LeadSource, attributes: []
-                }]
-            });
 
-            if (!leads) {
+            const organisationProfileWithLeads = await OrganisationProfile.findOne({
+                where: { userId },
+                include: [{
+                    model: Lead,
+                    attributes: ['id', 'userId', 'organisationId', 'leadTypeId', 'leadSourceId', 'description', 'status',
+                        [sequelize.literal('User.firstName'), 'firstName'],
+                        [sequelize.literal('User.lastName'), 'lastName'],
+                        [sequelize.literal('User.emailId'), 'email'],
+                        [sequelize.literal('LeadType.leadTypeName'), 'leadTypeName'],
+                        [sequelize.literal('LeadSource.leadSourceName'), 'leadSourceName'],
+                    ],
+                    include: [{
+                        model: User, attributes: []
+                    },
+                    {
+                        model: LeadType, attributes: []
+                    },
+                    {
+                        model: LeadSource, attributes: []
+                    }]
+                }]
+            }
+            )
+
+            if (!organisationProfileWithLeads || !organisationProfileWithLeads.Lead || organisationProfileWithLeads.Lead.length === 0) {
                 return { statusCode: 400, message: 'Lead of this organisation id not found', data: {} };
             }
-            return { statusCode: 200, message: 'Lead found', data: leads };
+            return { statusCode: 200, message: 'Lead found', data: organisationProfileWithLeads.Lead };
         } catch (error) {
             console.log("error in lead repository", error);
             return { statusCode: 500, message: `internal server error ${error.message}`, data: {} };

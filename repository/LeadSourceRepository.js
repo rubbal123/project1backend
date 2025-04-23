@@ -16,7 +16,7 @@ class LeadSourceRepository {
             return { statusCode: 500, message: `internal server error ${error.message}`, data: {} };
         }
     }
-    async getAllLeadSource(userId) {
+    async getAllLeadSource(userId, searchTerm) {
         try {
             const organisationProfile = await OrganisationProfile.findOne({ where: { userId } });
             if (!organisationProfile) {
@@ -27,7 +27,6 @@ class LeadSourceRepository {
             if (!leadSource) {
                 return { statusCode: 400, message: "Lead Types not found", data: {} };
             }
-            console.log(leadSource);
             return { statusCode: 200, message: "Lead Types found", data: leadSource };
         } catch (error) {
             console.log(error);
@@ -72,6 +71,7 @@ class LeadSourceRepository {
             return { statusCode: 500, message: `internal server error ${error.message}`, data: {} };
         }
     }
+
 
 }
 

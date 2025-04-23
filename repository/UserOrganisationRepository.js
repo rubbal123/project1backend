@@ -99,6 +99,8 @@ class UserOrganisationRepository {
             const userOrganisation = await UserOrganisation.findAll({
                 where: { organisationId }, attributes: ['id', 'userId', 'organisationId', 'roleId',
                     [sequelize.literal('User.emailId'), 'email'],
+                    [sequelize.literal('User.firstName'), 'firstName'],
+                    [sequelize.literal('User.lastName'), 'lastName'],
                     [sequelize.literal('Role.role'), 'role']],
                 include: [{
                     model: User, attributes: []
@@ -148,7 +150,7 @@ class UserOrganisationRepository {
 
             const subject = "Invite from Sale Funnel";
             const invitationLink = process.env.INVITATION_LINK + userId + "&roleId=" + roleId;
-            const html = `<div><h1>accept invite from abc company</h1><div>link :- <a href='${invitationLink}'></div>`
+            const html = `<div><h1>accept invite from abc company</h1><div>link :- <a href='${invitationLink}'>accept invite</a></div>`
             const text = "";
             const to = email;
             return await sendMail(to, subject, text, html);
